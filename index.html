@@ -26,30 +26,32 @@
       BOX
   </div>
   <script>
-    let rect;
-    let x;
-    let y;
-    setInterval(() => {
-      document.getElementById("txt").value = 
-      `X: ${x}, \nY: ${y}\njj`;
-    console.log(`X: ${x}, Y: ${y}`);
-    }, 10);
 
-    cards_box.addEventListener('mousemove', (event) => {
-    // Elementning o'lchovlarini olish
-     rect = cards_box.getBoundingClientRect();
-    
-    // Kursor pozitsiyasini hisoblash
-     x = (event.clientX - rect.left)/rect.width*100; // X koordinati
-     y = (event.clientY - rect.top)/rect.height*100;  // Y koordinati
+    const element = document.getElementById('cards_box');
 
-    
-    // Kursor pozitsiyasini ko'rsatish
-    document.getElementById("txt").value = 
+    element.addEventListener('touchmove', (event) => {
+        // Birinchi touch nuqtasini olish
+        const touch = event.touches[0];
+
+        // Elementning o'lchovlarini olish
+        const rect = element.getBoundingClientRect();
+        
+        // Barmoq pozitsiyasini hisoblash
+        const x = touch.clientX - rect.left; // X koordinati
+        const y = touch.clientY - rect.top;  // Y koordinati
+
+        // Barmoq pozitsiyasini ko'rsatish
+        document.getElementById("txt").value = 
       `X: ${x}, \nY: ${y}`;
     console.log(`X: ${x}, Y: ${y}`);
+        // Hodisani to'xtatish, aks holda sahifa aylanishi mumkin
+        event.preventDefault();
+    });
 
-});
+    // Kursor pozitsiyasini ko'rsatish
+    
+
+
   </script>
 </body>
 </html>
