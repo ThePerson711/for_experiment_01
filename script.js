@@ -15,7 +15,8 @@ const test = {
 const CUR = {
     d: 30,
     c: 20,
-    a: 50
+    a: 150,
+    b: 55
 }
 let inp = {
     lang: {
@@ -49,6 +50,10 @@ let ScrPos = {
 };
 let CrsC = false;
 let ThisDevice = "";
+let CardWords = {
+    korean: "",
+    uzbek: ""
+};
 // qurilmani tekshirish
 const userAgent = navigator.userAgent;
 if (/mobile/i.test(userAgent)) {
@@ -145,7 +150,16 @@ function StartTest() {
         StartOptionTest();
     } else if (settings.type === "card") {
         document.getElementById("mn_center").style = `transform: translateY(calc(1vh*100*(-1)));`;
+        StartCardTest();
     }
+}
+
+function StartCardTest() {
+    RandomQ = Math.floor(Math.random()*arr_for_test.length);
+    CardWords.korean = arr_for_test[RandomQ].korean;
+    CardWords.uzbek = arr_for_test[RandomQ].uzbek;
+
+    slideFlashcard("l")
 }
 
 function StartOptionTest() {
@@ -318,23 +332,19 @@ if (ThisDevice === "PC") {
         id = setInterval(() => {
             if (CrsC) {
                 if (BegP.x > ScrPos.x+CUR.d && (BegP.y-CUR.c < ScrPos.y || ScrPos.y < BegP.y+CUR.c) ) {
-                    cards_box.innerHTML = "left";   
-                    // 
+                    slideFlashcard("r");
                     clearInterval(id);                      
                 }
                 if (BegP.x < ScrPos.x-CUR.d && (BegP.y-CUR.c < ScrPos.y || ScrPos.y < BegP.y+CUR.c) ) {
-                    cards_box.innerHTML = "right";   
-                    // 
+                    slideFlashcard("l");
                     clearInterval(id);                      
                 }
                 if (BegP.y > ScrPos.y+CUR.d && (BegP.x-CUR.c < ScrPos.x || ScrPos.x < BegP.x+CUR.c) ) {
-                    cards_box.innerHTML = "up";   
-                    // 
+                    Aylan();
                     clearInterval(id);                      
                 }
                 if (BegP.y < ScrPos.y-CUR.d && (BegP.x-CUR.c < ScrPos.x || ScrPos.x < BegP.x+CUR.c) ) {
-                    cards_box.innerHTML = "down";   
-                    // 
+                    Aylan();
                     clearInterval(id);                      
                 }
             } 
@@ -363,36 +373,126 @@ if (ThisDevice === "PC") {
         // Hodisani to'xtatish, aks holda sahifa aylanishi mumkin
         event.preventDefault();
     });*/
-
     const cards_box = document.getElementById('cards_box');
     let startX, startY;
 
+    // CUR obyektini aniqlash (threshold)
+    const CUR = {
+        a: 30, // X yo'nalishi bo'yicha minimal masofa
+        b: 30  // Y yo'nalishi bo'yicha minimal masofa
+    };
+
+    // Touch start hodisasi - dastlabki koordinatalarni olish
     cards_box.addEventListener('touchstart', (event) => {
         const touch = event.touches[0];
         startX = touch.clientX;
         startY = touch.clientY;
     });
 
+    // Touch move hodisasi - surish yo'nalishini aniqlash
     cards_box.addEventListener('touchmove', (event) => {
         const touch = event.touches[0];
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
-        // Surilish yo'nalishini aniqlash
-            if (deltaX > CUR.d && (-CUR.c < deltaY || deltaY < CUR.c)) {
-                cards_box.innerHTML ="O'ngga surildi";
-            } 
-            if (deltaX < CUR.a && (-CUR.c < deltaY || deltaY < CUR.c)) {
-                cards_box.innerHTML ="Chapga surildi";
+
+        // Gorizontal surish (chap/o'ng)
+        if (Math.abs(deltaX) > CUR.a && Math.abs(deltaY) < CUR.b) {
+            if (deltaX > 0) {
+                // O'ngga surildi
+                slideFlashcard("r");
+            } else {
+                // Chapga surildi
+                slideFlashcard("l");
             }
-            if (deltaY > CUR.a && (-CUR.c < deltaX || deltaX < CUR.c)) {
-                cards_box.innerHTML ="Pastga surildi";
-            } 
-            if (deltaY < CUR.a && (-CUR.c < deltaX || deltaX < CUR.c)) {
-                cards_box.innerHTML ="Yuqoriga surildi";
+        }
+
+        // Vertikal surish (yuqoriga/pastga)
+        if (Math.abs(deltaY) > CUR.a && Math.abs(deltaX) < CUR.b) {
+            if (deltaY > 0) {
+                // Pastga surildi
+                Aylan(); // Sizning funksiyangiz
+            } else {
+                // Yuqoriga surildi
+                Aylan(); // Sizning funksiyangiz
             }
+        }
     });
 
+
+}
+
+function Aylan() {
+    const flashcard = document.getElementById('flashcard');
+    flashcard.classList.toggle('flipped'); // "flipped" klassini qo'shadi yoki olib tashlaydi
 }
 
 
 
+let currentCardIndex = 0;
+
+function updateFlashcard() {
+    const flashcard = document.getElementById('flashcard');
+    const front = flashcard.querySelector('.front h2');
+    const back = flashcard.querySelector('.back h2');
+
+    
+    front.textContent = CardWords.korean;
+    back.textContent = CardWords.uzbek;
+}
+
+function slideFlashcard(dir_) {
+
+    RandomQ = Math.floor(Math.random()*arr_for_test.length);
+    OurText = arr_for_test[RandomQ].korean;
+    CardWords.korean = arr_for_test[RandomQ].korean;
+    CardWords.uzbek = arr_for_test[RandomQ].uzbek;
+
+
+
+    const flashcard = document.getElementById('flashcard');
+    const incomingCard = document.createElement('div');
+    if (dir_ === "r") {
+        incomingCard.className = 'flashcard incoming-r';
+    } else {
+        incomingCard.className = 'flashcard incoming-l';
+    }
+    incomingCard.innerHTML = `
+        <div class="card front">
+            <h2>${CardWords.korean}</h2>
+        </div>
+        <div class="card back">
+            <h2>${CardWords.uzbek}</h2>
+        </div>
+    `;
+    document.querySelector('.flashcard-container').appendChild(incomingCard);
+
+    // Asosiy kartani kichraytirib va o'chirish
+    if (dir_ === "r") {
+        flashcard.classList.add('slide-out-r');
+    } else {
+        flashcard.classList.add('slide-out-l');
+    }
+
+    setTimeout(() => {
+        flashcard.style.visibility = 'hidden'; // Asosiy kartani yashirish
+
+        updateFlashcard();
+        
+        // O'ng tomondan kelayotgan kartani ko'rsatish
+        incomingCard.classList.add('show');
+        if (dir_ === "r") {
+            flashcard.classList.remove('slide-out-r');
+        } else {
+            flashcard.classList.remove('slide-out-l');
+        }
+
+        setTimeout(() => {
+            incomingCard.remove(); // Kirayotgan kartani olib tashlash
+        }, 600); // 600ms (animatsiya davomiyligi) dan keyin
+    }, 600); // 600ms (animatsiya davomiyligi) da
+
+    // O'zgarishdan keyin kartani ko'rsatish
+    setTimeout(() => {
+        flashcard.style.visibility = 'visible'; // Asosiy kartani qayta ko'rsatish
+    }, 1200); // Animatsiya tugagandan keyin
+}
