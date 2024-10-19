@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Experiment</title>
   <style>
+    *{
+      user-select: none;
+    }
     #txt {
       width: 300px;
       height: 200px;
@@ -23,20 +26,29 @@
       BOX
   </div>
   <script>
+    let rect;
+    let x;
+    let y;
+    setInterval(() => {
+      document.getElementById("txt").value = 
+      `X: ${x}, \nY: ${y}\njj`;
+    console.log(`X: ${x}, Y: ${y}`);
+    }, 10);
+
     cards_box.addEventListener('mousemove', (event) => {
     // Elementning o'lchovlarini olish
-    const rect = cards_box.getBoundingClientRect();
+     rect = cards_box.getBoundingClientRect();
     
     // Kursor pozitsiyasini hisoblash
-    const x = (event.clientX - rect.left)/rect.width*100; // X koordinati
-    const y = (event.clientY - rect.top)/rect.height*100;  // Y koordinati
+     x = (event.clientX - rect.left)/rect.width*100; // X koordinati
+     y = (event.clientY - rect.top)/rect.height*100;  // Y koordinati
 
     
     // Kursor pozitsiyasini ko'rsatish
     document.getElementById("txt").value = 
       `X: ${x}, \nY: ${y}`;
     console.log(`X: ${x}, Y: ${y}`);
-    
+
 });
   </script>
 </body>
