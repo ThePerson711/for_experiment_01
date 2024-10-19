@@ -14,7 +14,8 @@ const test = {
 }
 const CUR = {
     d: 30,
-    c: 20
+    c: 20,
+    a: 50
 }
 let inp = {
     lang: {
@@ -376,21 +377,19 @@ if (ThisDevice === "PC") {
         const touch = event.touches[0];
         const deltaX = touch.clientX - startX;
         const deltaY = touch.clientY - startY;
-
         // Surilish yo'nalishini aniqlash
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
+            if (deltaX > CUR.d && (-CUR.c < deltaY || deltaY < CUR.c)) {
                 cards_box.innerHTML ="O'ngga surildi";
-            } else {
+            } 
+            if (deltaX < CUR.a && (-CUR.c < deltaY || deltaY < CUR.c)) {
                 cards_box.innerHTML ="Chapga surildi";
             }
-        } else {
-            if (deltaY > 0) {
+            if (deltaY > CUR.a && (-CUR.c < deltaX || deltaX < CUR.c)) {
                 cards_box.innerHTML ="Pastga surildi";
-            } else {
+            } 
+            if (deltaY < CUR.a && (-CUR.c < deltaX || deltaX < CUR.c)) {
                 cards_box.innerHTML ="Yuqoriga surildi";
             }
-        }
     });
 
 }
